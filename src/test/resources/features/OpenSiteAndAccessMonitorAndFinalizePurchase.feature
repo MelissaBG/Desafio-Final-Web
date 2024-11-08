@@ -1,3 +1,4 @@
+@SmokeTest
 Feature: Open DemoBlaze Site, Access Monitor Category, Add to Cart, Go to Cart, Finalize Purchase and Validate
 
   Scenario: User opens the homepage, navigates to the Monitor category, adds a monitor to the cart, goes to the cart, completes the purchase and validates the entire flow

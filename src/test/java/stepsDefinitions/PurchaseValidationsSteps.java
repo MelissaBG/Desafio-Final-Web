@@ -1,49 +1,46 @@
 package stepsDefinitions;
 
+import io.cucumber.java.en.Then;
 import org.junit.jupiter.api.Assertions;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import pages.HomePage;
 import utils.DriverManager;
 
 public class PurchaseValidationsSteps {
+
     private WebDriver driver;
+    private HomePage homePage;
 
     public PurchaseValidationsSteps() {
         this.driver = DriverManager.getDriver();
+        this.homePage = new HomePage(driver);
     }
 
+    @Then("I should see the home page")
     public void validateHomePage() {
-        // Validar se a página inicial foi carregada verificando o título
         String pageTitle = driver.getTitle();
         Assertions.assertTrue(pageTitle.contains("STORE"));
     }
 
+    @Then("I should see the Monitor category displayed")
     public void validateMonitorCategory() {
-        // Validar se a categoria "Monitors" foi acessada corretamente
-        WebElement monitorCategory = driver.findElement(By.xpath("//a[contains(text(),'Monitors')]"));
-        Assertions.assertTrue(monitorCategory.isDisplayed(), "Monitor category not displayed");
+        Assertions.assertTrue(homePage.isMonitorCategoryDisplayed(), "Monitor category not displayed");
     }
 
+    @Then("I should see the monitor added to the cart")
     public void validateMonitorAddedToCart() {
-        // Validar se o monitor foi adicionado ao carrinho
-        WebElement cartIcon = driver.findElement(By.id("cartur"));
-        cartIcon.click();
-
-        // Verificar se o monitor está visível no carrinho
-        WebElement cartItem = driver.findElement(By.xpath("//tr/td[contains(text(),'Samsung')]"));
-        Assertions.assertTrue(cartItem.isDisplayed(), "Monitor not added to the cart");
+        homePage.goToCart();
+        Assertions.assertTrue(homePage.isMonitorInCart("Samsung"), "Monitor not added to the cart");
     }
 
+    @Then("I should see the checkout page")
     public void validateCheckoutPage() {
-        // Validar se a página de checkout é exibida
-        WebElement checkoutButton = driver.findElement(By.xpath("//button[contains(text(),'Place Order')]"));
-        Assertions.assertTrue(checkoutButton.isDisplayed(), "Checkout button is not displayed");
+        Assertions.assertTrue(homePage.isCheckoutButtonDisplayed(), "Checkout button is not displayed");
     }
 
+    @Then("I should see the order confirmation")
     public void validateOrderCompletion() {
-        // Validar se a compra foi completada com sucesso verificando a mensagem de confirmação
-        WebElement orderConfirmationMessage = driver.findElement(By.xpath("//h2[contains(text(),'Thank you for your purchase!')]"));
-        Assertions.assertTrue(orderConfirmationMessage.isDisplayed(), "Order confirmation message not displayed");
+        Assertions.assertTrue(homePage.isOrderConfirmationDisplayed(), "Order confirmation message not displayed");
     }
 }
+

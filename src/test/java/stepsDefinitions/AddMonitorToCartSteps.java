@@ -1,21 +1,25 @@
 package stepsDefinitions;
 
-import org.openqa.selenium.By;
+import io.cucumber.java.en.When;
+import pages.HomePage;
 import org.openqa.selenium.WebDriver;
 import utils.DriverManager;
 
 public class AddMonitorToCartSteps {
 
     private WebDriver driver;
+    private HomePage homePage;
 
     public AddMonitorToCartSteps() {
         this.driver = DriverManager.getDriver();
+        this.homePage = new HomePage(driver);
     }
 
+    @When("eu adiciono o monitor ao carrinho")
     public void addMonitorToCart() {
-        // XPath para o primeiro monitor na categoria
-        driver.findElement(By.xpath("//font[contains(text(),'Monitor Apple 24')]")).click();
-        // XPath para o botão "Add to cart"
-        driver.findElement(By.xpath("//font[contains(text(),'Adicionar ao carrinho')]")).click();
+        homePage.selectMonitor("Monitor Apple 24");
+        homePage.addToCart();
     }
 }
+
+

@@ -1,16 +1,32 @@
 package websetup;
 
-import utils.DriverManager;
+import org.openqa.selenium.WebDriver;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.chrome.ChromeDriver;
 
-//base para a configuração e finalização do navegador
 public class BaseTest {
-    @BeforeEach
-    public void setUp() {
-        DriverManager.getDriver().get("https://www.demoblaze.com/");
+
+    protected WebDriver driver;
+
+    public void setup() {
+        // Usando WebDriverManager para gerenciar automaticamente o driver do Chrome
+        WebDriverManager.chromedriver().setup();
+
+        // Inicialize o WebDriver
+        driver = new ChromeDriver();
+
+        // Defina uma URL para abrir
+        driver.get("https://www.demoblaze.com");
     }
 
-    @AfterEach
+    public WebDriver getDriver() {
+        return driver;
+    }
+
     public void tearDown() {
-       DriverManager.closeDriver();
+        if (driver != null) {
+            driver.quit();
+        }
     }
 }
+

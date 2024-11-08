@@ -1,3 +1,4 @@
+@SmokeTest
 Feature: Open DemoBlaze Site, Access Monitor Category, and Go To Cart
 
   Scenario: User opens the homepage, navigates to the Monitor category, and goes to the cart

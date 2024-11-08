@@ -1,28 +1,21 @@
 package runners;
 
-import stepsDefinitions.*;
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
+import org.junit.runner.RunWith;
+
+@RunWith(Cucumber.class)  // Executa o Cucumber com JUnit
+@CucumberOptions(
+        features = "src/test/resources/features", // Caminho dos arquivos .feature
+        glue = "stepsDefinitions", // Pacote onde estão suas definições de steps
+        plugin = {
+                "pretty", // Gera uma saída legível no console
+                "html:target/cucumber-reports/CucumberTestReport.html", // Relatório HTML
+                "json:target/cucumber-reports/CucumberTestReport.json"  // Relatório JSON
+        },
+        tags = "@SmokeTest" // Filtra os testes com base nas tags (opcional)
+)
 
 public class TestRunner {
-    public static void main(String[] args) {
-        OpenSiteSteps openSiteSteps = new OpenSiteSteps();
-        AccessMonitorCategorySteps accessMonitorCategorySteps = new AccessMonitorCategorySteps();
-        AddMonitorToCartSteps addMonitorToCartSteps = new AddMonitorToCartSteps();
-        GoToCartSteps goToCartSteps = new GoToCartSteps();
-        FinalizePurchaseSteps finalizePurchaseSteps = new FinalizePurchaseSteps();
-        PurchaseValidationsSteps purchaseValidationsSteps = new PurchaseValidationsSteps();
-        try {
-            openSiteSteps.setUp();
-            purchaseValidationsSteps.validateHomePage();
-            accessMonitorCategorySteps.accessMonitorCategory();
-            purchaseValidationsSteps.validateMonitorCategory();
-            addMonitorToCartSteps.addMonitorToCart();
-            purchaseValidationsSteps.validateMonitorAddedToCart();
-            goToCartSteps.goToCart();
-            purchaseValidationsSteps.validateCheckoutPage();
-            finalizePurchaseSteps.finalizePurchase();  // Finaliza a compra
-            purchaseValidationsSteps.validateOrderCompletion();
-        } finally {
-            openSiteSteps.tearDown();
-        }
-    }
+
 }

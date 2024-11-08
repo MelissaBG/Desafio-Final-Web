@@ -1,3 +1,4 @@
+@SmokeTest
 Feature: Abrir o Site DemoBlaze e Acessar a Categoria Monitor
 
   Scenario: Usuário abre a página inicial e navega para a categoria Monitor
