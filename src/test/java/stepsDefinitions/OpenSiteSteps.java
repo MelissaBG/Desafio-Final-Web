@@ -3,33 +3,34 @@ package stepsDefinitions;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import org.junit.jupiter.api.Assertions;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import pages.HomePage;
 import utils.DriverManager;
-import websetup.BaseTest;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-public class OpenSiteSteps extends BaseTest {
+public class OpenSiteSteps {
 
     private WebDriver driver;
+    private HomePage homePage;
 
     public OpenSiteSteps() {
         this.driver = DriverManager.getDriver();
+        this.homePage = new HomePage(driver);
     }
 
-    // Verificar se a página foi carregada corretamente
-    @Then("a página inicial deve ser carregada corretamente")
-    public void verificarPaginaCarregada() {
 
-        boolean isElementPresent = driver.findElements(By.id("logo")).size() > 0;
-
-        // Se o elemento foi encontrado, a página foi carregada corretamente
-        assertTrue(isElementPresent, "A página não foi carregada corretamente.");
-    }
     @Given("que eu abra a página inicial do DemoBlaze")
     public void openDemoBlazeSite() {
-        driver.get("https://www.demoblaze.com"); // URL do site
+        homePage.goToHomePage();
+    }
+
+    @Then("a página inicial deve ser carregada corretamente")
+    public void verificarPaginaCarregada() {
+        String expectedUrl = "https://www.demoblaze.com/";
+        String currentUrl = driver.getCurrentUrl();
+
+        Assertions.assertEquals(expectedUrl, currentUrl, "A URL da página inicial não corresponde à esperada.");
+
     }
 }
+
 

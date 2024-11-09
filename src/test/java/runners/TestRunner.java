@@ -2,7 +2,10 @@ package runners;
 
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
+import utils.DriverManager;
 
 @RunWith(Cucumber.class)  // Executa o Cucumber com JUnit
 @CucumberOptions(
@@ -17,5 +20,13 @@ import org.junit.runner.RunWith;
 )
 
 public class TestRunner {
+        @BeforeClass
+        public static void setup() {
+                DriverManager.getDriver();
+        }
 
+        @AfterClass
+        public static void tearDown() {
+                DriverManager.closeDriver();
+        }
 }
