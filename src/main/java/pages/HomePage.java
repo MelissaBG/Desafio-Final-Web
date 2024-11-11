@@ -12,7 +12,7 @@ public class HomePage {
     private WebDriver driver;
 
     private By categoriaMonitor = By.linkText("Monitors");
-    private By monitor = By.xpath("//div[@id='tbodyid']//div[contains(@class, 'col-1g-4') and contains(@class, 'col-md-6')]//h4[@class='card-title' and text()='Apple monitor 24']/ancestor::div[@class='card h-100']//a");
+    private By monitor = By.xpath("//a[contains(@href, 'prod.html?idp_=10')]");
 
     public HomePage(WebDriver driver) {
         this.driver = driver;

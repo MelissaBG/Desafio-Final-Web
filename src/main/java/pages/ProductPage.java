@@ -28,6 +28,9 @@ public class ProductPage {
         // Clica no botão "Add to cart"
         adicionarAoCarrinho.click();
 
+        // Aceita o alerta que aparece após adicionar ao carrinho
+        aceitarAlerta();
+
         //WebElement adicionarAoCarrinho = driver.findElement(addToCartButton);
        // adicionarAoCarrinho.click();
         //driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));  // Corrigido para usar Duration.ofSeconds

@@ -2,6 +2,11 @@ package pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class CheckoutPage {
     private WebDriver driver;
@@ -20,12 +25,25 @@ public class CheckoutPage {
     }
 
     public void preencherInformacoesDeCompra(String name, String country, String city, String card, String month, String year) {
-        driver.findElement(nameField).sendKeys(name);
-        driver.findElement(countryField).sendKeys(country);
-        driver.findElement(cityField).sendKeys(city);
-        driver.findElement(cardField).sendKeys(card);
-        driver.findElement(monthField).sendKeys(month);
-        driver.findElement(yearField).sendKeys(year);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        WebElement nameElement = wait.until(ExpectedConditions.visibilityOfElementLocated(nameField));
+        nameElement.sendKeys(name);
+
+        WebElement countryElement = wait.until(ExpectedConditions.visibilityOfElementLocated(countryField));
+        countryElement.sendKeys(country);
+
+        WebElement cityElement = wait.until(ExpectedConditions.visibilityOfElementLocated(cityField));
+        cityElement.sendKeys(city);
+
+        WebElement cardElement = wait.until(ExpectedConditions.visibilityOfElementLocated(cardField));
+        cardElement.sendKeys(card);
+
+        WebElement monthElement = wait.until(ExpectedConditions.visibilityOfElementLocated(monthField));
+        monthElement.sendKeys(month);
+
+        WebElement yearElement = wait.until(ExpectedConditions.visibilityOfElementLocated(yearField));
+        yearElement.sendKeys(year);
     }
 
     public void confirmarCompra() {
