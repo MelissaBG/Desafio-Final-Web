@@ -18,39 +18,35 @@ public class CheckoutPage {
     private By monthField = By.id("month");
     private By yearField = By.id("year");
     private By purchaseButton = By.xpath("//button[text()='Purchase']");
-    private By mensagemSucesso = By.xpath("//h2[contains(text(),'Thank you for your purchase!')]");
+    private By successMessage = By.xpath("//h2[contains(text(),'Thank you for your purchase!')]");
+    private By checkoutHeader = By.id("checkout-header"); // Elemento específico para verificar a página de checkout
 
     public CheckoutPage(WebDriver driver) {
         this.driver = driver;
     }
 
-    public void preencherInformacoesDeCompra(String name, String country, String city, String card, String month, String year) {
+    public void fillPurchaseFields(String name, String country, String city, String card, String month, String year) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-
-        WebElement nameElement = wait.until(ExpectedConditions.visibilityOfElementLocated(nameField));
-        nameElement.sendKeys(name);
-
-        WebElement countryElement = wait.until(ExpectedConditions.visibilityOfElementLocated(countryField));
-        countryElement.sendKeys(country);
-
-        WebElement cityElement = wait.until(ExpectedConditions.visibilityOfElementLocated(cityField));
-        cityElement.sendKeys(city);
-
-        WebElement cardElement = wait.until(ExpectedConditions.visibilityOfElementLocated(cardField));
-        cardElement.sendKeys(card);
-
-        WebElement monthElement = wait.until(ExpectedConditions.visibilityOfElementLocated(monthField));
-        monthElement.sendKeys(month);
-
-        WebElement yearElement = wait.until(ExpectedConditions.visibilityOfElementLocated(yearField));
-        yearElement.sendKeys(year);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(nameField)).sendKeys(name);
+        driver.findElement(countryField).sendKeys(country);
+        driver.findElement(cityField).sendKeys(city);
+        driver.findElement(cardField).sendKeys(card);
+        driver.findElement(monthField).sendKeys(month);
+        driver.findElement(yearField).sendKeys(year);
     }
 
-    public void confirmarCompra() {
+    public void confirmPurchase() {
         driver.findElement(purchaseButton).click();
     }
 
-    public boolean isCompraSucesso() {
-        return driver.findElement(mensagemSucesso).isDisplayed();
+    public boolean isPurchaseSuccessful() {
+        return new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOfElementLocated(successMessage))
+                .isDisplayed();
+    }
+
+    public boolean isCheckoutPage() {
+        WebElement checkoutHeaderElement = driver.findElement(checkoutHeader);
+        return checkoutHeaderElement.isDisplayed();
     }
 }

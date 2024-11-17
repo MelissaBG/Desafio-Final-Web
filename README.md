@@ -15,47 +15,26 @@ A automação utiliza o **Selenium WebDriver** com o **JUnit 5** para garantir q
 
 A estrutura do projeto está organizada da seguinte forma:
 
-src
-└── main
-    └── java
-    └── utilities
-        └── WebDriverManager.java
-└── websetup
-└── BaseTest.java
-└── test
-└── java
-└── steps
-└── OpenSiteSteps.java
-└── AccessMonitorCategorySteps.java
-└── AddMonitorToCartSteps.java
-└── GoToCartSteps.java
-└── FinalizePurchaseSteps.java
-└── PurchaseValidationsSteps.java
-└── runners
-└── TestRunner.java
-└── resources
-└── features
-└── OpenSiteAndAccessMonitorAndFinalizePurchase.feature
+src/ ├── main/ │ ├── java/ │ │ ├── utilities/ │ │ │ └── WebDriverManager.java │ │ └── BaseTest.java ├── test/ │ ├── java/ │ │ ├── steps/ │ │ │ ├── OpenSiteSteps.java │ │ │ ├── AccessMonitorCategorySteps.java │ │ │ ├── AddMonitorToCartSteps.java │ │ │ ├── GoToCartSteps.java │ │ │ ├── FinalizePurchaseSteps.java │ │ │ └── PurchaseValidationsSteps.java │ │ └── runners/ │ │ └── TestRunner.java ├── resources/ │ └── features/ │ └── OpenSiteAndAccessMonitorAndFinalizePurchase.feature
 
 
+### Descrição das Classes e Funções
 
-## Descrição das Classes e Funções
-
-### WebDriverManager.java
+#### **WebDriverManager.java**
 Responsável pela configuração e gerenciamento da instância do **WebDriver** (ChromeDriver), garantindo que o navegador seja iniciado e fechado corretamente.
 
-#### Métodos principais:
+**Métodos principais:**
 - `getDriver()`: Inicia o WebDriver, se ainda não estiver iniciado.
 - `closeDriver()`: Fecha o WebDriver, liberando os recursos do navegador.
 
-### BaseTest.java
+#### **BaseTest.java**
 Classe base que contém os métodos de configuração e encerramento de cada teste. Essa classe é herdada pelas demais classes de teste.
 
-#### Métodos principais:
+**Métodos principais:**
 - `setUp()`: Configura o ambiente e inicializa o WebDriver.
 - `tearDown()`: Fecha o navegador após a execução do teste.
 
-### Classes de Etapas (`steps`)
+#### **Classes de Etapas (`steps`)**
 Cada classe de **etapas** contém as ações realizadas durante a automação.
 
 - **OpenSiteSteps.java**: Realiza a abertura do site DemoBlaze.
@@ -65,10 +44,10 @@ Cada classe de **etapas** contém as ações realizadas durante a automação.
 - **FinalizePurchaseSteps.java**: Finaliza a compra, preenchendo todos os campos de checkout e realizando a compra.
 - **PurchaseValidationsSteps.java**: Contém as validações para garantir que o processo de automação ocorreu corretamente.
 
-### TestRunner.java
+#### **TestRunner.java**
 Classe responsável por orquestrar a execução de todas as etapas da automação.
 
-### OpenSiteAndAccessMonitorAndFinalizePurchase.feature
+#### **OpenSiteAndAccessMonitorAndFinalizePurchase.feature**
 Arquivo de **Gherkin** que descreve o comportamento esperado da aplicação, detalhando o fluxo de navegação no site, como a adição de um monitor ao carrinho e finalização da compra.
 
 ## Fluxo de Execução
