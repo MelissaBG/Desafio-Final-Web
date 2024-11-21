@@ -11,65 +11,71 @@ import java.time.Duration;
 
 public class ProductPage {
     private WebDriver driver;
+    private WebDriverWait wait;
 
     // Locators
-    private By addToCartButton = By.xpath("//a[text()='Add to cart']");
-    private By productName = By.xpath("//h1"); // Adjust this locator as needed for the product name on your page
+    private By addToCartButton = By.xpath("//*[@id='tbodyid']/div[2]/div/a");
+    private By productName = By.xpath("//div[@id='tbodyid']//div[1]//div[1]//div[1]"); // Adjust this locator as needed for the product name on your page
 
-    // Constructor
     public ProductPage(WebDriver driver) {
         this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+
+
+    public void selectMonitor() {
+        WebElement monitor = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='tbodyid']/div[1]/div/a")));
+        monitor.click();
     }
 
     public void addMonitorToCart() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-
-        // Wait for the "Add to cart" button to be clickable and click it
         WebElement addToCart = wait.until(ExpectedConditions.elementToBeClickable(addToCartButton));
         addToCart.click();
-
-        // Accept the alert that appears after adding to the cart
         acceptAlert();
     }
 
     public void acceptAlert() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+        // Espera o alerta ser apresentado
         wait.until(ExpectedConditions.alertIsPresent());
+
+        // Aceita o alerta (clica no botão OK do alerta)
         driver.switchTo().alert().accept();
     }
 
-    // Checks if the "Add to cart" button is visible
     public boolean isAddToCartButtonVisible() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         return wait.until(ExpectedConditions.visibilityOfElementLocated(addToCartButton)).isDisplayed();
     }
 
-    // Checks if the alert is present
     public boolean isAlertPresent() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         try {
+            // Espera até 10 segundos para que o alerta apareça
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             wait.until(ExpectedConditions.alertIsPresent());
             return true;
         } catch (TimeoutException e) {
+            System.err.println("O alerta não apareceu dentro do tempo esperado.");
             return false;
         }
     }
 
-    // Checks if the item is in the cart
+
     public boolean isItemInCart(String itemName) {
-        By itemLocator = By.xpath("//td[contains(text(), '" + itemName + "')]"); // Adjust as needed
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        By itemLocator = By.xpath("//td[contains(text(), '" + itemName + "')]");
         return wait.until(ExpectedConditions.visibilityOfElementLocated(itemLocator)).isDisplayed();
     }
 
-    // Checks if the product is visible
     public boolean isProductVisible() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try {
-            // Wait for the product name (or another identifying element) to be visible
             return wait.until(ExpectedConditions.visibilityOfElementLocated(productName)).isDisplayed();
         } catch (TimeoutException e) {
             return false;
         }
     }
+    public WebDriver getDriver() {
+        return this.driver;
+    }
+
 }

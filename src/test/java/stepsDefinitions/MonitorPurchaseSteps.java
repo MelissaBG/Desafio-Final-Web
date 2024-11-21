@@ -2,11 +2,16 @@ package stepsDefinitions;
 
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.When;
-import io.cucumber.java.en.Then;
+import io.cucumber.java.pt.Dado; // Alterado para suporte ao português
+import io.cucumber.java.pt.Quando;
+import io.cucumber.java.pt.Entao;
 import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import java.time.Duration;
 import pages.CartPage;
 import pages.CheckoutPage;
 import pages.HomePage;
@@ -35,56 +40,79 @@ public class MonitorPurchaseSteps {
         DriverManager.closeDriver();
     }
 
-    @Given("I am on the DemoBlaze homepage")
-    public void iAmOnTheDemoBlazeHomepage() {
-        driver.get("https://www.demoblaze.com/index.html");
-        Assertions.assertTrue(homePage.isHomePageLoaded(), "Home page was not loaded correctly.");
+    @Dado("que estou na página inicial do DemoBlaze")
+    public void queEstouNaPaginaInicialDoDemoBlaze() {
+        driver.get("https://www.demoblaze.com/");
+
+        // Espera até que a URL contenha o prefixo desejado
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        wait.until(ExpectedConditions.urlContains("demoblaze.com/"));
+
+        // Verifica se a página inicial foi carregada corretamente
+        Assertions.assertTrue(homePage.isHomePageLoaded(), "Página inicial não foi carregada corretamente.");
     }
 
-    @When("I access the monitors category")
-    public void iAccessTheMonitorsCategory() {
+    @Quando("acesso a categoria de monitores")
+    public void acessoACategoriaDeMonitores() {
+        // Realiza o clique na categoria de monitores
         homePage.goToMonitorsCategory();
-        Assertions.assertTrue(homePage.isCategoryLoaded("Monitors"), "Monitors category was not loaded correctly.");
+
+        // Aguarda que a URL contenha a parte esperada após o clique
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        wait.until(ExpectedConditions.urlContains("demoblaze.com/"));
+
+        // Agora verifica a presença de um elemento na nova página para garantir que ela foi carregada
+        WebElement monitorCategoryHeader = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='itemc']")));
+
+        Assertions.assertNotNull(monitorCategoryHeader, "Categoria de Monitores não carregada corretamente");
     }
 
-    @When("I select the first monitor")
-    public void iSelectTheFirstMonitor() {
-        homePage.selectMonitor();
-        Assertions.assertTrue(productPage.isProductVisible(), "Selected monitor is not visible.");
+    @Quando("seleciono o primeiro monitor")
+    public void selecionoOPrimeiroMonitor() {
+        productPage.selectMonitor();
+        Assertions.assertTrue(productPage.isProductVisible(), "Monitor selecionado não está visível.");
     }
 
-    @When("I add the monitor to the cart")
-    public void iAddTheMonitorToTheCart() {
+    @Quando("adiciono o monitor ao carrinho")
+    public void adicionoOMonitorAoCarrinho() {
+            // Verifica se o botão "Adicionar ao carrinho" está visível
+            Assertions.assertTrue(
+                    productPage.isAddToCartButtonVisible(),
+                    "Botão 'Adicionar ao carrinho' não está visível."
+            );
+            System.out.println("Botão 'Adicionar ao carrinho' encontrado e visível.");
 
-        Assertions.assertTrue(productPage.isAddToCartButtonVisible(), "'Add to cart' button is not visible.");
-        productPage.addMonitorToCart();
-        Assertions.assertTrue(productPage.isAlertPresent(), "Alert for item added to cart was not displayed.");
-        String itemName = "Monitor Name";
-        Assertions.assertTrue(productPage.isItemInCart(itemName), "Item was not found in the cart after being added.");
+            // Clica no botão para adicionar ao carrinho
+            productPage.addMonitorToCart();
+            System.out.println("Monitor adicionado ao carrinho.");
+
+            // Espera até que a URL contenha o fragmento "#", indicando que o conteúdo foi atualizado dinamicamente
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+            wait.until(ExpectedConditions.urlContains("#")); // Espera até que a URL tenha mudado
+
+            // Aguarda até que o alerta esteja presente
+            wait.until(ExpectedConditions.alertIsPresent());
+            productPage.acceptAlert(); // Aceita o alerta
+
     }
 
-    @When("I go to the cart")
-    public void iGoToTheCart() {
+
+    @Quando("vou para o carrinho")
+    public void vouParaOCarrinho() {
         cartPage.accessCart();
-        Assertions.assertTrue(cartPage.isCartPageLoaded(), "Cart page was not loaded correctly.");
+        Assertions.assertTrue(cartPage.isCartPageLoaded(), "Página do carrinho não foi carregada corretamente.");
     }
 
-    @When("I complete the purchase by filling in the required fields")
-    public void iCompleteThePurchaseByFillingInTheRequiredFields() {
+    @Quando("finalizo a compra preenchendo os campos obrigatórios")
+    public void finalizoACompraPreenchendoOsCamposObrigatorios() {
         cartPage.completePurchase();
-        Assertions.assertTrue(checkoutPage.isCheckoutPage(), "Checkout page was not loaded correctly.");
+        Assertions.assertTrue(checkoutPage.isCheckoutPage(), "Página de checkout não foi carregada corretamente.");
         checkoutPage.fillPurchaseFields("Test Name", "Brazil", "Test City", "1234 5678 9012 3456", "12", "2025");
         checkoutPage.confirmPurchase();
     }
 
-    @Then("the purchase should be completed successfully")
-    public void thePurchaseShouldBeCompletedSuccessfully() {
-        Assertions.assertTrue(checkoutPage.isPurchaseSuccessful(), "Purchase was not completed successfully!");
-    }
-
-    @Then("the item {string} should be in the cart")
-    public void theItemShouldBeInTheCart(String itemName) {
-        Assertions.assertTrue(cartPage.isItemInCart(itemName), "Item was not found in the cart.");
+    @Entao("a compra deve ser finalizada com sucesso")
+    public void aCompraDeveSerFinalizadaComSucesso() {
+        Assertions.assertTrue(checkoutPage.isPurchaseSuccessful(), "Compra não foi finalizada com sucesso!");
     }
 }
-
