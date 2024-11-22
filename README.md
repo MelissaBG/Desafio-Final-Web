@@ -1,75 +1,249 @@
-# Automação de Testes - DemoBlaze
 
-## Visão Geral
-Esta automação foi criada para validar o fluxo de compra de um monitor no site **DemoBlaze**, que inclui as seguintes etapas:
-- Abertura da página inicial
-- Acesso à categoria de Monitores
-- Adição de um monitor ao carrinho
-- Acesso ao carrinho
-- Finalização da compra
-- Validações em cada etapa do processo
+# **Projeto de Automação de Testes - DemoBlaze**
 
-A automação utiliza o **Selenium WebDriver** com o **JUnit 5** para garantir que o processo de navegação e compras ocorra como esperado. As validações são realizadas após cada etapa para garantir que a aplicação se comporte corretamente.
+Este projeto utiliza **Cucumber**, **Selenium** e **JUnit** para automatizar testes de UI no site **DemoBlaze**. O objetivo principal é garantir que o site funcione corretamente em diferentes cenários de interação, como acessar o site, navegar entre categorias e realizar compras.
 
-## Estrutura do Projeto
+## **Tecnologias Utilizadas**
 
-A estrutura do projeto está organizada da seguinte forma:
+- **Cucumber**: Framework de testes Behavior-Driven Development (BDD) para definir cenários de teste de forma legível.
+- **Selenium WebDriver**: Biblioteca para automatizar interações com o navegador e executar testes de UI.
+- **JUnit**: Framework para execução de testes automatizados e asserções.
 
-src/ ├── main/ │ ├── java/ │ │ ├── utilities/ │ │ │ └── WebDriverManager.java │ │ └── BaseTest.java ├── test/ │ ├── java/ │ │ ├── steps/ │ │ │ ├── OpenSiteSteps.java │ │ │ ├── AccessMonitorCategorySteps.java │ │ │ ├── AddMonitorToCartSteps.java │ │ │ ├── GoToCartSteps.java │ │ │ ├── FinalizePurchaseSteps.java │ │ │ └── PurchaseValidationsSteps.java │ │ └── runners/ │ │ └── TestRunner.java ├── resources/ │ └── features/ │ └── OpenSiteAndAccessMonitorAndFinalizePurchase.feature
+## **Estrutura do Projeto**
 
+O projeto segue a estrutura de **Cucumber**, onde os testes são descritos em arquivos `.feature` e os steps de automação são definidos em arquivos `.java`.
 
-### Descrição das Classes e Funções
+### **Pastas principais do projeto**:
+- **`src/main/java/stepsDefinitions`**: Contém as definições dos steps de automação.
+- **`src/test/resources`**: Contém os arquivos `.feature` que descrevem os cenários de teste.
+- **`src/main/java/pages`**: Contém as páginas de objetos (Page Object Model) que facilitam a interação com os elementos das páginas.
+- **`src/main/java/utils`**: Contém utilitários, como a classe para gerenciar o driver do Selenium.
 
-#### **WebDriverManager.java**
-Responsável pela configuração e gerenciamento da instância do **WebDriver** (ChromeDriver), garantindo que o navegador seja iniciado e fechado corretamente.
+---
 
-**Métodos principais:**
-- `getDriver()`: Inicia o WebDriver, se ainda não estiver iniciado.
-- `closeDriver()`: Fecha o WebDriver, liberando os recursos do navegador.
+## **Funcionalidade do Teste**
 
-#### **BaseTest.java**
-Classe base que contém os métodos de configuração e encerramento de cada teste. Essa classe é herdada pelas demais classes de teste.
+### **1. Teste de Abertura do Site (Smoke Test)**
 
-**Métodos principais:**
-- `setUp()`: Configura o ambiente e inicializa o WebDriver.
-- `tearDown()`: Fecha o navegador após a execução do teste.
+Este teste verifica se o site **DemoBlaze** carrega corretamente.
 
-#### **Classes de Etapas (`steps`)**
-Cada classe de **etapas** contém as ações realizadas durante a automação.
+#### Gherkin (Cenário de Teste):
+```gherkin
+@SmokeTest
+Feature: Abrir o Site DemoBlaze
 
-- **OpenSiteSteps.java**: Realiza a abertura do site DemoBlaze.
-- **AccessMonitorCategorySteps.java**: Acessa a categoria de Monitores.
-- **AddMonitorToCartSteps.java**: Adiciona um monitor ao carrinho.
-- **GoToCartSteps.java**: Acessa o carrinho de compras.
-- **FinalizePurchaseSteps.java**: Finaliza a compra, preenchendo todos os campos de checkout e realizando a compra.
-- **PurchaseValidationsSteps.java**: Contém as validações para garantir que o processo de automação ocorreu corretamente.
+  Scenario: Abrir a página inicial
+    Given que eu abra a página inicial do DemoBlaze
+    Then a página inicial deve ser carregada corretamente
+```
 
+#### Steps de Automação (`OpenSiteSteps.java`):
+```java
+package stepsDefinitions;
+
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.WebDriver;
+import pages.HomePage;
+import utils.DriverManager;
+
+public class OpenSiteSteps {
+
+    private WebDriver driver;
+    private HomePage homePage;
+
+    public OpenSiteSteps() {
+        this.driver = DriverManager.getDriver();
+        this.homePage = new HomePage(driver);
+    }
+
+    @Given("que eu abra a página inicial do DemoBlaze")
+    public void openDemoBlazeSite() {
+        // Acessa a página inicial do DemoBlaze
+        homePage.goToHomePage();
+    }
+
+    @Then("a página inicial deve ser carregada corretamente")
+    public void verificarPaginaCarregada() {
+        // Verifica se a URL da página inicial está correta
+        String expectedUrl = "https://www.demoblaze.com/";
+        String currentUrl = driver.getCurrentUrl();
+
+        // Asserção que valida se a URL é a esperada
+        Assertions.assertEquals(expectedUrl, currentUrl, "A URL da página inicial não corresponde à esperada.");
+    }
+}
+```
+
+### **2. Teste de Compra de Monitor**
+
+Este teste automatiza o processo de navegação no site, seleção de um monitor, adição ao carrinho e finalização da compra.
+
+#### Gherkin (Cenário de Teste):
+```gherkin
+Feature: Realizar uma compra de monitor no DemoBlaze
+
+  Scenario: Realizar uma compra de monitor no DemoBlaze
+    Given que estou na página inicial do DemoBlaze
+    When acesso a categoria de monitores
+    And seleciono o primeiro monitor
+    And adiciono o monitor ao carrinho
+    And finalizo a compra preenchendo os campos obrigatórios
+    Then a compra deve ser finalizada com sucesso
+```
+
+#### Steps de Automação (`MonitorPurchaseSteps.java`):
+```java
+package stepsDefinitions;
+
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.pt.Dado; // Alterado para suporte ao português
+import io.cucumber.java.pt.Quando;
+import io.cucumber.java.pt.Entao;
+import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import java.time.Duration;
+import pages.CartPage;
+import pages.CheckoutPage;
+import pages.HomePage;
+import pages.ProductPage;
+import utils.DriverManager;
+
+public class MonitorPurchaseSteps {
+
+    private WebDriver driver;
+    private HomePage homePage;
+    private ProductPage productPage;
+    private CartPage cartPage;
+    private CheckoutPage checkoutPage;
+
+    @Before
+    public void setup() {
+        // Inicializa as páginas e o driver antes de cada cenário
+        driver = DriverManager.getDriver();
+        homePage = new HomePage(driver);
+        productPage = new ProductPage(driver);
+        cartPage = new CartPage(driver);
+        checkoutPage = new CheckoutPage(driver);
+    }
+
+    @After
+    public void tearDown() {
+        // Fecha o driver após a execução do teste
+        DriverManager.closeDriver();
+    }
+
+    @Dado("que estou na página inicial do DemoBlaze")
+    public void queEstouNaPaginaInicialDoDemoBlaze() {
+        // Acessa a página inicial do DemoBlaze
+        driver.get("https://www.demoblaze.com/");
+        
+        // Espera que a URL da página seja carregada
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        wait.until(ExpectedConditions.urlContains("demoblaze.com/"));
+        
+        // Valida que a página inicial foi carregada corretamente
+        Assertions.assertTrue(homePage.isHomePageLoaded(), "Página inicial não foi carregada corretamente.");
+    }
+
+    @Quando("acesso a categoria de monitores")
+    public void acessoACategoriaDeMonitores() {
+        // Navega para a categoria de monitores
+        homePage.goToMonitorsCategory();
+        
+        // Espera que a categoria de monitores esteja visível
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        wait.until(ExpectedConditions.urlContains("demoblaze.com/"));
+        WebElement monitorCategoryHeader = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='itemc']")));
+        
+        // Valida se a categoria foi carregada corretamente
+        Assertions.assertNotNull(monitorCategoryHeader, "Categoria de Monitores não carregada corretamente");
+    }
+
+    @Quando("seleciono o primeiro monitor")
+    public void selecionoOPrimeiroMonitor() {
+        // Seleciona o primeiro monitor da lista
+        productPage.selectMonitor();
+        
+        // Valida se o produto foi selecionado corretamente
+        Assertions.assertTrue(productPage.isProductVisible(), "Monitor selecionado não está visível.");
+    }
+
+    @Quando("adiciono o monitor ao carrinho")
+    public void adicionoOMonitorAoCarrinho() {
+        // Adiciona o monitor ao carrinho de compras
+        WebElement addToCartButton = driver.findElement(By.xpath("//*[@id='tbodyid']/div[2]/div/a"));
+        addToCartButton.click();
+        
+        // Espera pela confirmação da adição ao carrinho
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        wait.until(ExpectedConditions.alertIsPresent());
+        Alert alert = driver.switchTo().alert();
+        alert.accept();
+        
+        // Navega para a página do carrinho
+        WebElement cartLink = driver.findElement(By.id("cartur"));
+        cartLink.click();
+        
+        // Espera que o carrinho seja carregado corretamente
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("totalp")));
+    }
+
+    @Quando("finalizo a compra preenchendo os campos obrigatórios")
+    public void finalizoACompraPreenchendoOsCamposObrigatorios() {
+        // Inicia o processo de finalização de compra
+        WebElement placeOrderButton = driver.findElement(By.xpath("//button[@data-target='#orderModal']"));
+        placeOrderButton.click();
+        
+        // Espera pela visibilidade do modal de finalização de pedido
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        WebElement orderModal = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("orderModal")));
+        
+        // Preenche os campos obrigatórios para finalizar a compra
+        WebElement nameField = driver.findElement(By.id("name"));
+        WebElement countryField = driver.findElement(By.id("country"));
+        WebElement cityField = driver.findElement(By.id("city"));
+        WebElement cardField = driver.findElement(By.id("card"));
+        WebElement monthField = driver.findElement(By.id("month"));
+        WebElement yearField = driver.findElement(By.id("year"));
+
+        nameField.sendKeys("Test Name");
+        countryField.sendKeys("Brazil");
+        cityField.sendKeys("Test City");
+        cardField.sendKeys("1234 5678 9012 3456");
+        monthField.sendKeys("12");
+        yearField.sendKeys("2025");
+
+        // Clica no botão de finalizar compra
+        WebElement purchaseButton = orderModal.findElement(By.xpath("//button[text()='Purchase']"));
+        purchaseButton.click();
+
+        // Espera pela mensagem de confirmação da compra
+        WebElement confirmationMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("sweet-alert")));
+        
+        // Valida se a compra foi finalizada com sucesso
+        Assertions.assertTrue(confirmationMessage.getText
+
+().contains("Thank you for your purchase!"), "Compra não finalizada com sucesso.");
+    }
+
+    @Entao("a compra deve ser finalizada com sucesso")
+    public void aCompraDeveSerFinalizadaComSucesso() {
+        // Este passo já está validado no método de finalização da compra
+    }
+}
+```
 #### **TestRunner.java**
 Classe responsável por orquestrar a execução de todas as etapas da automação.
 
-#### **OpenSiteAndAccessMonitorAndFinalizePurchase.feature**
-Arquivo de **Gherkin** que descreve o comportamento esperado da aplicação, detalhando o fluxo de navegação no site, como a adição de um monitor ao carrinho e finalização da compra.
+## **Conclusão**
 
-## Fluxo de Execução
+Neste projeto, foi abordado o uso de Cucumber com Selenium para automação de testes em um site de e-commerce. O exemplo demonstrado aqui reflete a interação com a página inicial, categorias de produtos e o processo de compra. Com o uso de testes automatizados, é possível garantir que a funcionalidade do site seja validada de forma eficiente.
 
-1. **Abrir o Site**: A automação começa com a abertura da página inicial do **DemoBlaze**.
-2. **Acessar a Categoria de Monitores**: O script clica na categoria **Monitors** no menu de navegação.
-3. **Adicionar um Monitor ao Carrinho**: Um monitor específico é selecionado e adicionado ao carrinho.
-4. **Ir para o Carrinho**: O script clica no ícone do carrinho e acessa a página de checkout.
-5. **Finalizar a Compra**: O script preenche os campos necessários para finalizar a compra.
-6. **Validações**: Durante todo o fluxo, são realizadas validações para garantir o correto funcionamento da aplicação.
-
-## Dependências e Requisitos
-
-- **Selenium WebDriver**: Para interação com o navegador.
-- **JUnit 5**: Framework de testes utilizado.
-- **ChromeDriver**: Driver utilizado para o navegador Google Chrome.
-- **WebDriverManager**: Gerencia a versão do ChromeDriver automaticamente.
-
-## Execução do Teste
-
-Para executar os testes, basta rodar a classe `TestRunner.java`, que executará todo o fluxo de navegação e validações.
-
-## Conclusão
-
-Esta automação de testes cobre o processo completo de navegação e compra no site **DemoBlaze**, garantindo que a aplicação esteja funcionando corretamente durante o fluxo de compras. Com o uso do **Selenium WebDriver**, **JUnit** e **WebDriverManager**, a automação é robusta e independente de ambiente.
